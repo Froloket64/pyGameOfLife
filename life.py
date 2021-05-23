@@ -32,15 +32,16 @@ pg.display.update()
 
 
 ## The real (backend) board
-board = [[0 for i in range(size)] for ii in range(size)] # [[f'0_{i}:{ii}' for i in range(size)] for ii in range(size)]
+board = [[f'O:{h}:{v}' for v in range(size)] for h in range(size)] # [[0 for i in range(size)] for ii in range(size)]
 ## Hint: ^^^ for such stuff: 0 0 1 1 0
 ##                                 ^ -- index? --> 2 (NOT GOOD)
 
 
 ## Base configuration (1st )
-board[1][4] += 1
-board[2][4] += 1
-board[3][4] += 1
+board[1][4] = board[1][4].replace('O', 'X')
+board[2][4] = board[2][4].replace('O', 'X')
+board[3][4] = board[3][4].replace('O', 'X')
+board[5][4] = board[5][4].replace('O', 'X')
 
 
 
@@ -62,24 +63,34 @@ while True:  ## == "on each update (with -inteval-)"
     system('clear')
 
 
+    ## The cell display
+    for row in board:
+        for cell in row:
+            if cell[0] == 'X':
+                left = int( cell.split(':')[1] )
+                top = int( cell.split(':')[2] )
+                pg.draw.rect( window, WHITE, pg.Rect(top*20, left*20, 20, 20) )
+
+
     ## The LOGIC!
     ## it's kinda empty...
 
 
     ## Just another way of viewing the current config.
     ## Useful for debug, that's all.
-    gboard = ''
+    dboard = ''
     for row in board:
         for each in row:
-            if each == 0:
-                gboard += '- '
-            elif each == 1:
-                gboard += 'X '
-        gboard += '\n'
+            if each[0] == 'O':
+                dboard += '- '
+            elif each[0] == 'X':
+                dboard += 'X '
+        dboard += '\n'
 
-    print(gboard)
+    print(dboard)
+    # print(board)
 
 
     sleep(interval)
 
-#     pg.display.update()
+    pg.display.update()
