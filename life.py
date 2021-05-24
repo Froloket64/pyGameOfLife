@@ -14,17 +14,19 @@ WHITE = (255 , 255 , 255)
 
 
 ## A window instance
-window = pg.display.set_mode((700, 500))  ## Setting the window's size
+windowSize = 500
+window = pg.display.set_mode((windowSize, windowSize))  ## Setting the window's size
 window.fill(GREY)  ## Setting the window's color
 
 
 ## Drawing the board (cells)
-size = 10
+size = 20
+l = windowSize / size
 
 for vert in range(size + 1):  ## VERTical lines
-    pg.draw.line(window, BLACK, (vert * 20, 0), (vert * 20, window.get_height()))
+    pg.draw.line(window, BLACK, (vert * l, 0), (vert * l, size * l))
 for horiz in range(size + 1):  ## HORIZontal lines
-    pg.draw.line(window, BLACK, (0, horiz * 20), (window.get_width(), horiz * 20))
+    pg.draw.line(window, BLACK, (0, horiz * l), (size * l, horiz * l))
 
 
 ## Showing the board on the screen
@@ -32,16 +34,15 @@ pg.display.update()
 
 
 ## The real (backend) board
-board = [[f'O:{h}:{v}' for v in range(size)] for h in range(size)] # [[0 for i in range(size)] for ii in range(size)]
-## Hint: ^^^ for such stuff: 0 0 1 1 0
-##                                 ^ -- index? --> 2 (NOT GOOD)
+board = [[f'O:{h}:{v}' for v in range(size)] for h in range(size)]
 
 
-## Base configuration (1st )
+## Base configuration (1st generation)
 board[1][4] = board[1][4].replace('O', 'X')
 board[2][4] = board[2][4].replace('O', 'X')
 board[3][4] = board[3][4].replace('O', 'X')
 board[5][4] = board[5][4].replace('O', 'X')
+board[0][size - 1] = board[0][size - 1].replace('O','X')
 
 
 
@@ -69,11 +70,18 @@ while True:  ## == "on each update (with -inteval-)"
             if cell[0] == 'X':
                 left = int( cell.split(':')[1] )
                 top = int( cell.split(':')[2] )
-                pg.draw.rect( window, WHITE, pg.Rect(top*20, left*20, 20, 20) )
+                pg.draw.rect( window, WHITE, pg.Rect(top * l, left * l, l, l) )
 
 
     ## The LOGIC!
-    ## it's kinda empty...
+    ## well, it's kinda empty by now...
+    ##  Plan:
+    ## 1. Get a list of all neighbors   !!!
+    ## 2. Check amount of alive ones
+    # for row in board:
+    #     for cell in row:
+    #         if cell[0] == '1':
+    #             (row).count('1')  ## ?..
 
 
     ## Just another way of viewing the current config.
