@@ -5,6 +5,7 @@ import pygame as pg
 import sys
 
 pg.init()
+clock = pg.time.Clock()
 
 
 ## Color Constants
@@ -14,7 +15,7 @@ WHITE = (255 , 255 , 255)
 
 
 ## A window instance
-windowSize = 500
+windowSize = 600
 window = pg.display.set_mode((windowSize, windowSize))  ## Setting the window's size
 window.fill(GREY)  ## Setting the window's color
 
@@ -64,6 +65,21 @@ while True:  ## == "on each update (with -inteval-)"
     system('clear')
 
 
+    ## Just another way of viewing the current config.
+    ## Useful for debug, that's all.
+    dboard = ''
+    for row in board:
+        for cell in row:
+            if cell[0] == 'O':
+                dboard += '- '
+            elif cell[0] == 'X':
+                dboard += 'X '
+        dboard += '\n'
+
+    print(dboard)
+    # print(board)
+
+
     ## The cell display
     for row in board:
         for cell in row:
@@ -74,31 +90,49 @@ while True:  ## == "on each update (with -inteval-)"
 
 
     ## The LOGIC!
-    ## well, it's kinda empty by now...
     ##  Plan:
-    ## 1. Get a list of all neighbors   !!!
-    ## 2. Check amount of alive ones
-    # for row in board:
-    #     for cell in row:
-    #         if cell[0] == '1':
-    #             (row).count('1')  ## ?..
-
-
-    ## Just another way of viewing the current config.
-    ## Useful for debug, that's all.
-    dboard = ''
+    ## 1. [ ] Get a list of all neighbors   !!!?
+    ## 2. [-] Check amount of alive ones
+    ## 3. [-] Change the cell's state
     for row in board:
-        for each in row:
-            if each[0] == 'O':
-                dboard += '- '
-            elif each[0] == 'X':
-                dboard += 'X '
-        dboard += '\n'
+        for cell in row:
+            isAlive = cell.split(':')[0]
+            column = int( cell.split(':')[1] )
+            line = int( cell.split(':')[2] )
 
-    print(dboard)
-    # print(board)
+            isUpperAlive = board[line - 1][column][0] == 'X' if line - 1 >= 0 else False  ## Check the upper one
+            isLowerAlive = board[line - 1][column][0] == 'X' if (line + 1) & size else False  ## Check the lower one
+            isLeftAlive = board[line - 1][column][0] == 'X' if column - 1 >= 0 else False  ## Check the left one
+            isRightAlive = board[line - 1][column][0] == 'X' if (column + 1) % size else False  ## Check the right one
+
+            neighbors = 0
 
 
-    sleep(interval)
+            ## Increasing the neighbor counter (when needed)
+            if isUpperAlive:
+                neighbors += 1
+            if isLowerAlive:
+                neighbors += 1
+            if isLeftAlive:
+                neighbors += 1
+            if isRightAlive:
+                neighbors += 1
 
-    pg.display.update()
+            ## Modifying the cell's state, based
+            ## on the amount of neighbors
+            if isAlive == 'X':
+                if neighbors <= 1:
+                    board[line][column] = 'O' + cell[1:]
+                elif neighbors == 2 or neighbors == 3:
+                    continue
+                elif neighbors > 3:
+                    board[line][column] = 'O' + cell[1:]
+            elif isAlive == 'O':
+                if neighbors == 3:
+                    board[line][column] = 'X' + cell[1:]
+
+
+    pg.display.update()  ## Updating the screen ;)
+
+    sleep(1)  ## Waiting... (speed of the game)
+    # clock.tick(60)
