@@ -1,7 +1,6 @@
 ## TODO:
 ## 1. Make a better neighborShow implementation
 ## ? 2. Rewrite the whole damn thing to be more functional programming-like
-## 3. Add pause functionality
 
 ## Imports
 from os import system
@@ -13,13 +12,14 @@ import sys
 pg.init()
 clock = pg.time.Clock()
 
-print('''"""
+print('''
+"""
 Key Bindings:
 
 esc - Exit
 space - Pause
 r - Clear
-"""''')
+"""''')  ## Yeah, that's just a hint for keybinds
 
 debug = 0  ## The level of debug info:
 ## 0: No output
@@ -41,8 +41,8 @@ size = 20
 board = [[f'O:{h}:{v}:O' for v in range(size)] for h in range(size)]
 
 
-## A window instance
-windowSize = (720, 720)  ## The x overwidth is used for additional GUI
+## Creating a window instance
+windowSize = (720, 720)  ## A hint: you can add some width on [0] if you would like to make a tools section on the right, it'll not break anything
 window = pg.display.set_mode(windowSize)  ## Setting the window's size
 window.fill(GREY)  ## Setting the window's color
 
@@ -60,15 +60,6 @@ for horiz in range(size + 1):  ## HORIZontal lines
 pg.display.update()
 
 
-## Base configuration (1st generation)
-board[0][size - 1] = board[0][size - 1].replace('O','X')
-board[1][4] = board[1][4].replace('O', 'X')
-board[2][4] = board[2][4].replace('O', 'X')
-board[3][4] = board[3][4].replace('O', 'X')
-board[5][4] = board[5][4].replace('O', 'X')
-board[7][7] = board[7][7].replace('O', 'X')
-
-
 ## Clearing the board
 def clear(board):
 	for row in board:
@@ -79,9 +70,10 @@ def clear(board):
 			board[line][column] = cell.replace('X', 'O')
 
 
-fps = 5  ## Time between updates
-timeScale = 1  ## Oh yeeeah (pause)
+fps = 10  ## Well, FPS
+timeScale = 1  ## 1 == Time going (is that the word?); 0 == Time stopped (oh yeah)
 while True:  ## == "on each frame"
+	assert timeScale in (0, 1), "Wow, a strange thing mystifying: timeScale not 0 nor 1"
 	###  ! Events tracking  ###
 	for event in pg.event.get():  ## For each event happened,
 		if event.type == pg.QUIT:  ## If a cross (exit) button was pressed,
@@ -89,15 +81,15 @@ while True:  ## == "on each frame"
 			sys.exit()             ## (properly)
 
 		if event.type == pg.KEYDOWN:  ## - Key Bindings -
-			if event.key == pg.K_ESCAPE:
-				pg.quit()  ##         |-- Exit
-				sys.exit()  ##        |
+			if event.key == pg.K_ESCAPE:  ## esc
+				pg.quit()  ##  |-- Exit
+				sys.exit()  ## |
 			
-			if event.key == pg.K_SPACE:
-				timeScale = (timeScale + 1) % 2
+			if event.key == pg.K_SPACE:  ## space
+				timeScale = (timeScale + 1) % 2  ## Well, if not going in detail, stop/resume time on space press
 			
-			if event.key == pg.K_r:
-				clear(board)
+			if event.key == pg.K_r:  ## r
+				clear(board)  ## "Clearing the board"
 
 		if event.type == pg.MOUSEBUTTONDOWN:  ## - Mouse Bindings -
 			if event.button == 1:  ## If LMB is pressed
@@ -106,7 +98,7 @@ while True:  ## == "on each frame"
 					y = event.pos[1]
 
 					board[ceil(y // l)][ ceil(x // l) ] = board[ceil(y // l)][ ceil(x // l) ].replace('O', 'X')  ## Make the cell under cursor alive
-			
+
 			if event.button == 3:  ## If RMB is pressed
 				if event.pos[0] <= windowSize[1] and event.pos[1] <= windowSize[1]:  ## and the click is in board zone (just in case you'd want to add some non-board space)
 					x = event.pos[0]
@@ -115,9 +107,9 @@ while True:  ## == "on each frame"
 					board[ceil(y // l)][ ceil(x // l) ] = board[ceil(y // l)][ ceil(x // l) ].replace('X', 'O')  ## Make the cell under cursor dead
 
 			elif (event.button == 4) and (fps + 1 != 10):  ## On scroll up
-				fps += 1  ## Increase the speed (to the max of 10FPS)
-			if (event.button == 5) and (fps - 1 != 0):  ## On scroll down (and fps don't go into 0),
-				fps -= 1  ## Decrease the speed
+				fps += 1  ## Increase the speed (to the max of 15FPS)
+			if (event.button == 5) and (fps - 1 != 0):  ## On scroll down
+				fps -= 1  ## Decrease the speed (if only fps don't turn 0)
 
 
 	## Redrawing the grey squares,
@@ -220,7 +212,4 @@ while True:  ## == "on each frame"
 
 	pg.display.update()  ## Updating the screen
 
-	clock.tick(fps)  ## This one is more correct in terms
-	##                  of setting the FPS of the game,
-	##                  but I just want it to wait for a
-	##                  certain time
+	clock.tick(fps)  ## Setting the FPS (and speed of the game)
