@@ -18,7 +18,8 @@
 
 My homemade Game of Life implementation written on **Python** using `PyGame`.
 
-## Libs/Imports:
-- pygame (the main module)
-- os (for clearing the console)
-- sys (for proper quitting)
+## Libs/Imports/Dependencies:
+- `pygame` (to be able to make a game ;) )
+- `os` **[standart lib]** (for clearing the console)
+- `sys` **[standart lib]** (for proper quitting)
+- `math` **[standart lib]** (for a ceiling function)
