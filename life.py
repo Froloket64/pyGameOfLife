@@ -4,7 +4,6 @@
 
 ## Imports
 from os import system
-from time import sleep
 from math import ceil
 import pygame as pg
 import sys
